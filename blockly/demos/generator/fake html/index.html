@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Blockly Demo: Generating JavaScript</title>
+  <script src="../../blockly_compressed.js"></script>
+  <script src="../../blocks_compressed.js"></script>
+  <script src="../../javascript_compressed.js"></script>
+  <script src="../../msg/js/en.js"></script>
+  <style>
+    /*body {
+      background-color: #fff;
+      font-family: sans-serif;
+    }
+    h1 {
+      font-weight: normal;
+      font-size: 140%;
+    }*/
+    #wrap {
+       width:1400px;
+       margin:0 auto;
+    }
+    #blocklyDiv {
+       float:left;
+       width:800px;
+    }
+    #tenDiv {
+       float:right;
+       width:750px;
+    }
+  </style>
+  <link rel="stylesheet" href="buttons.css">
+</head>
+<body>
+
+  <p>
+
+    <button onclick="showCode()" class="button button-action button-rounded">Show JavaScript</button>
+    <button onclick="runCode()" class="button button-primary button-rounded">Run JavaScript</button>
+
+  </p>
+<div id="wrap">
+  <div id="blocklyDiv" style="height: 480px; width: 600px;"></div>
+  <div id="tenDiv">
+    <p>
+    <img id="chooseImg" src="D:\\pleaseupload.png" width="100" height="80">
+    <img id="stateImg" src="D:\\logo.png" width="150" height="70">
+</p>
+  <p>
+    <span id="result" style="font-size:30px"></span>
+</p>
+<p>
+    <button id="correctBtn" onclick="correct()" class="button button-royal button-pill" disabled>辨識正確</button>
+
+</p>
+<p>
+    <button id="incorrectBtn" onclick="incorrect()" class="button button-caution button-pill" disabled>辨識錯誤</button>
+    <button id="zeroBtn" class="button button-3d button-box button-circle button-jumbo button-small" onclick="chooseResult()" disabled>0</button>
+    <button id="oneBtn" class="button button-3d button-box button-circle button-jumbo button-small" onclick="chooseResult()" disabled>1</button>
+    <button id="twoBtn" class="button button-3d button-box button-circle button-jumbo button-small" onclick="chooseResult()" disabled>2</button>
+  </p>
+  </div>
+</div>
+  <xml id="toolbox" style="display: none">
+    <category name="Logic">
+      <block type="controls_if"></block>
+      <block type="logic_compare"></block>
+      <block type="logic_operation"></block>
+      <block type="logic_negate"></block>
+      <block type="logic_boolean"></block>
+    </category>
+    <category name="Loops">
+      <block type="controls_repeat_ext">
+        <value name="TIMES">
+          <block type="math_number">
+            <field name="NUM">10</field>
+          </block>
+        </value>
+      </block>
+      <block type="controls_whileUntil"></block>
+    </category>
+    <category name="Math">
+      <block type="math_number"></block>
+      <block type="math_arithmetic"></block>
+      <block type="math_single"></block>
+      <block type="math_random_int"></block>
+
+    </category>
+    <category name="Variables" custom="VARIABLE"></category>
+    <category name="Text">
+      <block type="text"></block>
+      <block type="text_length"></block>
+      <block type="text_print"></block>
+    </category>
+    <category name="Testing">
+      <block type="my_one"></block>
+      <block type="my_two"></block>
+      <block type="my_three"></block>
+      <block type="my_four"></block>
+      <block type="socket"></block>
+      <block type="socket_custcom"></block>
+    </category>
+    <category name="Max/Msp">
+      <block type="play_1"></block>
+      <block type="play_2"></block>
+      <block type="play_3"></block>
+      <block type="music_stop"></block>
+      <block type="toggle_dac"></block>
+      <block type="cmd_to_maxmsp"></block>
+      <block type="send_file_to_maxmsp"></block>
+    </category>
+    <category name="Arduino">
+    	<block type="cmd_to_arduino"></block>
+    	<block type="led_blink"></block>
+    	<block type="pin_3"></block>
+    	<block type="pin_4"></block>
+    	<block type="pin_5"></block>
+    </category>
+    <category name="Raspberry Pi">
+    	<block type="cmd_to_rpi"></block>
+    	<block type="led_blink"></block>
+    	<block type="pin_3"></block>
+    	<block type="pin_4"></block>
+    	<block type="pin_5"></block>
+    </category>
+    <category name="Pure Data">
+    	<block type="cmd_to_pd"></block>
+    </category>
+    <category name="Google Image Analysis">
+    	<block type="send to analysis"></block>
+    </category>
+  </xml>
+
+  <xml id="startBlocks" style="display: none">
+    <block type="controls_if" inline="false" x="20" y="20">
+      <mutation else="1"></mutation>
+      <value name="IF0">
+        <block type="logic_compare" inline="true">
+          <field name="OP">EQ</field>
+          <value name="A">
+            <block type="math_arithmetic" inline="true">
+              <field name="OP">MULTIPLY</field>
+              <value name="A">
+                <block type="math_number">
+                  <field name="NUM">6</field>
+                </block>
+              </value>
+              <value name="B">
+                <block type="math_number">
+                  <field name="NUM">7</field>
+                </block>
+              </value>
+            </block>
+          </value>
+          <value name="B">
+            <block type="math_number">
+              <field name="NUM">42</field>
+            </block>
+          </value>
+        </block>
+      </value>
+      <statement name="DO0">
+        <block type="text_print" inline="false">
+          <value name="TEXT">
+            <block type="text">
+              <field name="TEXT">Don't panic</field>
+            </block>
+          </value>
+        </block>
+      </statement>
+      <statement name="ELSE">
+        <block type="text_print" inline="false">
+          <value name="TEXT">
+            <block type="text">
+              <field name="TEXT">Panic</field>
+            </block>
+          </value>
+        </block>
+      </statement>
+    </block>
+  </xml>
+
+  <script>
+    var workspace = Blockly.inject('blocklyDiv',
+        {media: '../../media/',
+         toolbox: document.getElementById('toolbox')});
+    Blockly.Xml.domToWorkspace(document.getElementById('startBlocks'),
+                               workspace);
+
+    function showCode() {
+      // Generate JavaScript code and display it.
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      var code = Blockly.JavaScript.workspaceToCode(workspace);
+      alert(code);
+      changeSrc()
+
+    }
+    var counter=0;
+    function runCode() {
+
+      // Generate JavaScript code and run it.
+      window.LoopTrap = 1000;
+      Blockly.JavaScript.INFINITE_LOOP_TRAP =
+          'if (--window.LoopTrap == 0) throw "Infinite loop.";\n';
+      var code = Blockly.JavaScript.workspaceToCode(workspace);
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      // alert(code);
+      try {
+        eval(code);
+      } catch (e) {
+        alert(e);
+      }
+      document.getElementById("stateImg").style.visibility = 'visible';
+      if(counter==0){
+        document.getElementById("stateImg").src="D:\\recog.gif";
+        document.getElementById("chooseImg").src="D:\\twoa.png";
+        //要辨識成0
+      }else if(counter==1){
+        document.getElementById("stateImg").src="D:\\recog.gif";
+        document.getElementById("chooseImg").src="D:\\twoa.png";
+        document.getElementById("result").innerHTML="";
+        //要辨識成2
+      }else if(counter==2){
+        document.getElementById("stateImg").src="D:\\recog.gif";
+        document.getElementById("chooseImg").src="D:\\zeroa.png";
+        document.getElementById("result").innerHTML="";
+        //要辨識成0
+      }else if(counter==3){
+        document.getElementById("stateImg").src="D:\\recog.gif";
+        document.getElementById("chooseImg").src="D:\\onea.png";
+        document.getElementById("result").innerHTML="";
+
+        //要辨識成0
+      }else if(counter==4){
+        document.getElementById("stateImg").src="D:\\recog.gif";
+        document.getElementById("chooseImg").src="D:\\oneb.png";
+        document.getElementById("result").innerHTML="";
+        //要辨識成0
+
+    }else if(counter==5){
+      document.getElementById("stateImg").src="D:\\recog.gif";
+      document.getElementById("chooseImg").src="D:\\onec.png";
+      document.getElementById("result").innerHTML="";
+      //要辨識成1
+    }
+    window.setTimeout(timeup, 10000);
+
+    }
+    function timeup(){
+      document.getElementById("stateImg").style.visibility = 'hidden';
+      document.getElementById("correctBtn").disabled = false
+      document.getElementById("incorrectBtn").disabled = false
+      if(counter==0){
+        document.getElementById("result").innerHTML="辨識結果：0";
+      }else if(counter==1){
+        document.getElementById("result").innerHTML="辨識結果：2";
+      }else if(counter==2){
+        document.getElementById("result").innerHTML="辨識結果：0";
+      }else if(counter==3){
+        document.getElementById("result").innerHTML="辨識結果：0";
+      }else if(counter==4){
+        document.getElementById("result").innerHTML="辨識結果：0";
+      }else if(counter==5){
+        document.getElementById("result").innerHTML="辨識結果：1";
+      }
+      counter++;
+    }
+
+    function changeSrc()
+  {
+  document.getElementById("myImage").src="D:\\training-images\\1\\im1031.png";
+  }
+  function correct() {
+    alert("成功存入資料庫!!");
+    document.getElementById("zeroBtn").disabled = true
+    document.getElementById("oneBtn").disabled = true
+    document.getElementById("twoBtn").disabled = true
+    document.getElementById("correctBtn").disabled = true
+    document.getElementById("incorrectBtn").disabled = true
+  }
+  function incorrect() {
+    document.getElementById("zeroBtn").disabled = false
+    document.getElementById("oneBtn").disabled = false
+    document.getElementById("twoBtn").disabled = false
+    document.getElementById("correctBtn").disabled = true
+    alert("請選擇正確答案!!");
+  }
+  function chooseResult() {
+    alert("已修正辨識結果，並成功存入資料庫!!");
+    document.getElementById("zeroBtn").disabled = true
+    document.getElementById("oneBtn").disabled = true
+    document.getElementById("twoBtn").disabled = true
+    document.getElementById("correctBtn").disabled = true
+    document.getElementById("incorrectBtn").disabled = true
+  }
+
+
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Blockly Demo: Generating JavaScript</title>
+  <script src="../../blockly_compressed.js"></script>
+  <script src="../../blocks_compressed.js"></script>
+  <script src="../../javascript_compressed.js"></script>
+  <script src="../../msg/js/en.js"></script>
+  <style>
+    /*body {
+      background-color: #fff;
+      font-family: sans-serif;
+    }
+    h1 {
+      font-weight: normal;
+      font-size: 140%;
+    }*/
+    #wrap {
+       width:1500px;
+       margin:0 auto;
+    }
+    #blocklyDiv {
+       float:left;
+       width:800px;
+    }
+    #tenDiv {
+       float:right;
+       width:750px;
+    }
+  </style>
+  <link rel="stylesheet" href="buttons.css">
+</head>
+<body>
+
+  <p>
+    <button onclick="showCode()" class="button button-action button-rounded">Show JavaScript</button>
+    <button onclick="runCode()" class="button button-primary button-rounded">Run JavaScript</button>
+    <button onclick="listCookie()" class="button button-action button-rounded">List cookie</button>
+  </p>
+  <div id="wrap">
+    <div id="blocklyDiv" style="height: 480px; width: 700px;"></div>
+    <div id="tenDiv">
+      <p>
+          <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+          <img id="selectedImg" src="file:\\\D:\\pleaseupload.png" width="100" height="80">
+          <img id="stateImg" src="file:\\\D:\\logo.png" width="150" height="70">
+          <input id="file-input" type="file" name="name" style="display: none;" />
+          <!-- <input type=button value="document.cookie" onclick="alert(document.cookie)"> -->
+      </p>
+      <p>
+          <span id="result" style="font-size:30px"></span>
+      </p>
+      <p>
+          <button id="selectImgBtn" onclick="document.getElementById('file-input').click();" class="button button-royal button-pill">選擇圖片</button>
+
+      </p>
+      <p>
+          <button id="predictionTrueBtn" onclick="predictionTrue()" class="button button-primary button-pill">辨識正確</button>
+          <button id="predictionFalseBtn" onclick="predictionFalse()" class="button button-caution button-pill">辨識錯誤</button>
+      </p>
+      <p>
+          <button id="zeroBtn" onclick="ifFasleAnswerIs('0')" class="button button-3d button-box button-circle button-jumbo button-small">0</button>
+          <button id="oneBtn" onclick="ifFasleAnswerIs('1')" class="button button-3d button-box button-circle button-jumbo button-small">1</button>
+          <button id="twoBtn" onclick="ifFasleAnswerIs('2')" class="button button-3d button-box button-circle button-jumbo button-small">2</button>
+          <button id="threeBtn" onclick="ifFasleAnswerIs('3')" class="button button-3d button-box button-circle button-jumbo button-small">3</button>
+          <button id="fourBtn" onclick="ifFasleAnswerIs('4')" class="button button-3d button-box button-circle button-jumbo button-small">4</button>
+          <button id="fiveBtn" onclick="ifFasleAnswerIs('5')" class="button button-3d button-box button-circle button-jumbo button-small">5</button>
+          <button id="sixBtn" onclick="ifFasleAnswerIs('6')" class="button button-3d button-box button-circle button-jumbo button-small">6</button>
+          <button id="sevenBtn" onclick="ifFasleAnswerIs('7')" class="button button-3d button-box button-circle button-jumbo button-small">7</button>
+          <button id="eightBtn" onclick="ifFasleAnswerIs('8')" class="button button-3d button-box button-circle button-jumbo button-small">8</button>
+          <button id="nineBtn" onclick="ifFasleAnswerIs('9')" class="button button-3d button-box button-circle button-jumbo button-small">9</button>
+
+      </p>
+    </div>
+  </div>
+  <xml id="toolbox" style="display: none">
+    <category name="Logic">
+      <block type="controls_if"></block>
+      <block type="logic_compare"></block>
+      <block type="logic_operation"></block>
+      <block type="logic_negate"></block>
+      <block type="logic_boolean"></block>
+    </category>
+    <category name="Loops">
+      <block type="controls_repeat_ext">
+        <value name="TIMES">
+          <block type="math_number">
+            <field name="NUM">10</field>
+          </block>
+        </value>
+      </block>
+      <block type="controls_whileUntil"></block>
+    </category>
+    <category name="Math">
+      <block type="math_number"></block>
+      <block type="math_arithmetic"></block>
+      <block type="math_single"></block>
+      <block type="math_random_int"></block>
+
+    </category>
+    <category name="Variables" custom="VARIABLE"></category>
+    <category name="Text">
+      <block type="text"></block>
+      <block type="text_length"></block>
+      <block type="text_print"></block>
+    </category>
+    <category name="General">
+
+      <block type="gene_tcp"></block>
+      <block type="gene_udp"></block>
+      <block type="gene_uds"></block>
+      <block type="delay_time"></block>
+    </category>
+    <category name="Max/Msp">
+      <block type="play_1"></block>
+      <block type="play_2"></block>
+      <block type="play_3"></block>
+      <block type="music_stop"></block>
+      <block type="toggle_dac"></block>
+      <block type="cmd_to_maxmsp"></block>
+      <block type="send_file_to_maxmsp"></block>
+    </category>
+    <category name="Arduino">
+      <block type="gene_arduino"></block>
+      <block type="digitalpin_input"></block>
+      <block type="pin_value"></block>
+      <block type="digitalpin_output"></block>
+      <block type="analogpin_input"></block>
+      <block type="led_switch"></block>
+      <block type="led_blink"></block>
+      <block type="light_sensor"></block>
+    	<block type="ultrasonic_arduino"></block>
+      <block type="tone_arduino"></block>
+      <block type="servo_motor"></block>
+
+    </category>
+    <category name="Raspberry Pi">
+      <block type="gene_rpi"></block>
+    	<block type="rpi_camera_photo"></block>
+      <block type="photo_interval"></block>
+    	<block type="photo_number"></block>
+    	<block type="rpi_camera_video"></block>
+    	<block type="video_fps"></block>
+      <block type="video_length"></block>
+      <block type="camera_width"></block>
+      <block type="camera_height"></block>
+    </category>
+    <category name="Pure Data">
+    	<block type="send_to_puredata"></block>
+    </category>
+    <category name="Tensorflow Image Recognition">
+    	<block type="send_to_tensorflow_image_recognition"></block>
+      <block type="get_recognition_result"></block>
+      <!-- <block type="compare_string"></block> -->
+
+    </category>
+    <!-- <category name="Google Image Analysis">
+    	<block type="send_to_analysis"></block>
+    </category> -->
+  </xml>
+
+  <xml id="startBlocks" style="display: none">
+    <block type="controls_if" inline="false" x="20" y="20">
+      <mutation else="1"></mutation>
+      <value name="IF0">
+        <block type="logic_compare" inline="true">
+          <field name="OP">EQ</field>
+          <value name="A">
+            <block type="math_arithmetic" inline="true">
+              <field name="OP">MULTIPLY</field>
+              <value name="A">
+                <block type="math_number">
+                  <field name="NUM">6</field>
+                </block>
+              </value>
+              <value name="B">
+                <block type="math_number">
+                  <field name="NUM">7</field>
+                </block>
+              </value>
+            </block>
+          </value>
+          <value name="B">
+            <block type="math_number">
+              <field name="NUM">42</field>
+            </block>
+          </value>
+        </block>
+      </value>
+      <statement name="DO0">
+        <block type="text_print" inline="false">
+          <value name="TEXT">
+            <block type="text">
+              <field name="TEXT">Don't panic</field>
+            </block>
+          </value>
+        </block>
+      </statement>
+      <statement name="ELSE">
+        <block type="text_print" inline="false">
+          <value name="TEXT">
+            <block type="text">
+              <field name="TEXT">Panic</field>
+            </block>
+          </value>
+        </block>
+      </statement>
+    </block>
+  </xml>
+
+  <script>
+    var workspace = Blockly.inject('blocklyDiv',
+        {media: '../../media/',
+         toolbox: document.getElementById('toolbox')});
+    Blockly.Xml.domToWorkspace(document.getElementById('startBlocks'),
+                               workspace);
+
+    function showCode() {
+      // Generate JavaScript code and display it.
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      var code = Blockly.JavaScript.workspaceToCode(workspace);
+      alert(code);
+      window.setTimeout(getPrediction, 100);
+    }
+
+    function runCode() {
+
+      // if(getCookieByName('selectImgPath')=='null'){
+      //   alert('請先選擇圖片');
+      //
+      //
+      // }else{
+          // Generate JavaScript code and run it.
+          window.LoopTrap = 1000;
+          Blockly.JavaScript.INFINITE_LOOP_TRAP =
+              'if (--window.LoopTrap == 0) throw "Infinite loop.";\n';
+          var code = Blockly.JavaScript.workspaceToCode(workspace);
+          Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+          try {
+            eval(code);
+          } catch (e) {
+            alert(e);
+          }
+          document.cookie = "predictionTorF=null";
+          document.cookie = "ifFasleAnswerIs=null";
+          document.cookie = "tensorflow_prediction=null";
+
+          window.setInterval(getPrediction, 1000);
+      // }
+    }
+    function getPrediction(){
+        var prediction=getCookieByName('tensorflow_prediction');
+        document.getElementById("result").innerHTML=prediction;
+    }
+    function predictionFalse(){
+        document.cookie = "predictionTorF=false";
+    }
+    function predictionTrue(){
+        document.cookie = "predictionTorF=true";
+    }
+    function ifFasleAnswerIs(answer){
+        document.cookie = "ifFasleAnswerIs="+ answer;
+    }
+    $(":file").change(function(){
+        var fake_pathoffile = $(":file").val()
+        var imgfilename = fake_pathoffile.substr(fake_pathoffile.lastIndexOf("\\")+1, fake_pathoffile.length-1);
+        //alert(imgfilename);
+        var expires = new Date();
+        //有效時間保存 2 天 2*24*60*60*1000
+        expires.setTime(expires.getTime() + 172800000);
+        document.cookie = "selectImgPath=file:\\D:\\images\\"+ imgfilename + ";expires=" + expires.toGMTString();
+        //alert('cookie:'+getCookieByIndex(0));
+        document.getElementById("selectedImg").src="file:\\D:\\images\\"+imgfilename;
+        // document.getElementById("selectedImg").src="https://i.stack.imgur.com/uHoGc.jpg";
+        // document.getElementById("selectedImg").src="";
+     });
+     function getCookieByName(name) {
+       var arg = escape(name) + "=";
+       var i = 0;
+       while (i < document.cookie.length) {
+       var j = i + arg.length;
+           if (document.cookie.substring(i, j) == arg){
+             return getCookieByIndex(j);
+           }
+           i = document.cookie.indexOf(" ", i) + 1;
+           if (i == 0) break;
+       }
+       return null;
+       }
+     function getCookieByIndex(index) {
+     var endIndex = document.cookie.indexOf(";", index);
+     if (endIndex == -1) endIndex = document.cookie.length;
+     return unescape(document.cookie.substring(index, endIndex));
+     }
+     function listCookie() {
+
+       cookieArray = document.cookie.split(";");
+       alert(cookieArray);
+     }
+  </script>
+
+</body>
+</html>

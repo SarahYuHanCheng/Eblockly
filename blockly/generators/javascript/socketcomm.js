@@ -4,6 +4,25 @@ goog.provide('Blockly.JavaScript.socketcomm');
 
 goog.require('Blockly.JavaScript');
 
+function getCookieByName(name) {
+  var arg = escape(name) + "=";
+  var i = 0;
+  while (i < document.cookie.length) {
+    var j = i + arg.length;
+    if (document.cookie.substring(i, j) == arg){
+      return getCookieByIndex(j);
+    }
+    i = document.cookie.indexOf(" ", i) + 1;
+    if(i==0) break;
+  }
+  return null;
+}
+function getCookieByIndex(index) {
+  var endIndex = document.cookie.indexOf(";", index);
+  if (endIndex == -1) endIndex = document.cookie.length;
+  return unescape(document.cookie.substring(index, endIndex));
+}
+
 Blockly.JavaScript['gene_tcp'] = function(block) {
 
    var msg = Blockly.JavaScript.valueToCode(block, 'TEXT',
@@ -289,9 +308,8 @@ Blockly.JavaScript['digitalpin_input'] = function(block) {
   'document.cookie = digital_pin+\'pinValue=null\';',
   'ws.onopen = function(){',
   '//ws.send(arduino_uno);',
-   'ws.send(arduino_uno_cmdStart+\'@\'+feature_digitalread+\'@\'+digital_pin+\'@\'+arduino_uno_cmdEnd);',
-   'document.cookie = digital_pin+\'pinValue=null\';',
-
+  'ws.send(arduino_uno_cmdStart+\'@\'+feature_digitalread+\'@\'+digital_pin+\'@\'+arduino_uno_cmdEnd);',
+  'document.cookie = digital_pin+\'pinValue=null\';',
   '};',
   'ws.onmessage = function (evt){',
    'received_msg = evt.data;',
@@ -315,62 +333,19 @@ Blockly.JavaScript['digitalpin_input'] = function(block) {
 };
 
 Blockly.JavaScript['pin_value'] = function(block) {
-  var value_pin_value = Blockly.JavaScript.valueToCode(block, 'PIN_VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+  var the_pin = Blockly.JavaScript.valueToCode
+  (block, 'PIN_VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+  var CookieName = the_pin+'pinValue';
+  var the_value =getCookieByName(CookieName);
   var functionName = Blockly.JavaScript.provideFunction_(
   'getPinValue',[
   'function '+Blockly.JavaScript.FUNCTION_NAME_PLACEHOLDER_+
   '(value_pin_value){',
-  // 'delayfunc();',
-  'return getCookieByName(value_pin_value+\'pinValue\');',
-  'function getCookieByName(name) {',
-    'var arg = escape(name) + "=";',
-    'var i = 0;',
-    'while (i < document.cookie.length) {',
-      'var j = i + arg.length;',
-      'if (document.cookie.substring(i, j) == arg){',
-           'return getCookieByIndex(j);',
-      '}',
-      'i = document.cookie.indexOf(" ", i) + 1;',
-      'if (i == 0) break;',
-    '}',
-    'return null;',
-  '}',
-  'function getCookieByIndex(index) {',
-    'var endIndex = document.cookie.indexOf(";", index);',
-    'if (endIndex == -1) endIndex = document.cookie.length;',
-    'return unescape(document.cookie.substring(index, endIndex));',
-  '}',
-  'function delayfunc(){',
-  'var PastDate=new Date();',
-  'var past_h=PastDate.getHours();',
-  'var past_m=PastDate.getMinutes();',
-  'var past_s=PastDate.getSeconds();',
-   'while (true){',
-     'var NowDate=new Date();',
-     'var now_m=NowDate.getMinutes();',
-     'var now_h=NowDate.getHours();',
-     'var now_s=NowDate.getSeconds();',
-     'if(now_h==past_h){',
-       'if(now_m==past_m){',
-         'total_sec = now_s - past_s;',
-       '}else{',
-          'if(now_s>=past_s)',
-            'total_sec = (now_m-past_m)*60+now_s-past_s;',
-          'else ',
-            'total_sec = (now_m-past_m)*60+past_s-now_s;',
-       '}',
-       'if(Number(total_sec)>=3){',
-       //'if(Number(total_sec)>=10){',
-        //  'alert(String(total_sec));',
-         'return total_sec;',
-         //break;
-       '}',
-     '}',
-   '}',
-  '}',
+  'if(value_pin_value.indexOf(\'HIGH\')!=-1)  return \'HIGH\';',
+  'else if(value_pin_value.indexOf(\'LOW\')!=-1)  return \'LOW\';',
  '}']);
 
-  var code = functionName + '(' + value_pin_value + ')';
+  var code = functionName + '(\'' + the_value + '\''+')';
   return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
 };
 Blockly.JavaScript['rpi_camera_photo'] = function(block) {
@@ -380,7 +355,7 @@ Blockly.JavaScript['rpi_camera_photo'] = function(block) {
   'takePhoto',[
   'function '+Blockly.JavaScript.FUNCTION_NAME_PLACEHOLDER_+
   '(){',
-  'var ws = new WebSocket(\'ws://192.168.0.103:9998/echo\');',
+  'var ws = new WebSocket(\'ws://172.20.10.9:9998/echo\');',
   'var rpi_cmdStart= \'raspberrypi####\';',
   'var feature_takephoto= \'takephoto\'',
   'ws.onopen = function(){',
@@ -389,7 +364,7 @@ Blockly.JavaScript['rpi_camera_photo'] = function(block) {
   '};',
   'ws.onmessage = function (evt){',
   // 'document.cookie = \'selectImgPath=file:\\\\D:\\\\rpiphoto\\\\rpi\'+ str(evt.data);',
-  'document.cookie = \'selectImgPath=file:\\\\D:\\\\rpiphoto\\\\rpi\'+ String(evt.data);',
+  'document.cookie = \'selectImgPath=file:///Users/sarahcheng/Desktop/tensorflow_db\'+ String(evt.data);',
   'alert(evt.data);',
 
   '};',
